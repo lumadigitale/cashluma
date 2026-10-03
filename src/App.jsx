@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { baslat, call, ekle, getCache, getCfg, getQueue, gonder, demoMu } from './api';
 import { bosVeri, islemler } from './data';
 import { kategorize, anahtarKelime, etiketOf } from './categorize';
@@ -17,6 +17,7 @@ export default function App() {
   const [durum, setDurum] = useState({ yukleniyor: false, hata: '' });
   const [kuyruk, setKuyruk] = useState(getQueue());
   const [hazir, setHazir] = useState(false);
+  const ekran = useRef(null);
 
   const yenile = useCallback(async () => {
     setDurum({ yukleniyor: true, hata: '' });
@@ -88,7 +89,7 @@ export default function App() {
   const git = (t, filtre) => {
     if (filtre) setTxFiltre(filtre);
     setTab(t);
-    window.scrollTo(0, 0);
+    ekran.current?.scrollTo(0, 0);
   };
 
   if (!hazir) return <div className="app" />;
@@ -100,15 +101,15 @@ export default function App() {
           {hataMetni(durum.hata)}
         </div>
       )}
-      <main className="screen">
+      <main className="screen" ref={ekran}>
         {tab === 'home' && (
-          <Home raw={veri} tx={tx} yukleniyor={durum.yukleniyor} yenile={yenile} ekle={setEkleAcik} git={git} tanimsiz={tanimsiz} />
+          <Home raw={veri} tx={tx} yenile={yenile} ekle={setEkleAcik} git={git} tanimsiz={tanimsiz} />
         )}
         {tab === 'tx' && <Transactions raw={veri} tx={tx} filtre={txFiltre} setFiltre={setTxFiltre} islem={islem} />}
         {tab === 'analysis' && <Analysis raw={veri} tx={tx} />}
         {tab === 'settings' && <Settings raw={veri} yenile={yenile} islem={islem} />}
       </main>
-      <BottomNav tab={tab} git={git} ekle={() => setEkleAcik('gider')} />
+      <BottomNav tab={tab} git={git} />
       {ekleAcik && <AddSheet tur={ekleAcik} kapat={() => setEkleAcik(null)} kaydet={kaydet} />}
     </div>
   );
@@ -120,6 +121,8 @@ function hataMetni(h) {
     unauthorized: 'Anahtar yanlış. Ayarlar’ı kontrol et.',
     'Failed to fetch': 'İnternet yok, son kayıtlı veri gösteriliyor.',
     satir_degismis: 'Tablo değişmiş, yenileyip tekrar dene.',
+    sabit_gecersiz: 'Ad, tutar ve gün dolu olmalı.',
+    unknown_action: 'Apps Script eski sürümde. Yeni kodu yapıştırıp yeni sürüm dağıt.',
   };
   return m[h] || h;
 }

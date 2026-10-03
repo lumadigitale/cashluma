@@ -4,33 +4,33 @@
 export const HARIC = ['Alacak', 'Borç ödeme']; // harcama sayılmaz, ayrı gösterilir
 
 export const KATEGORILER = [
-  { ad: 'Yemek', renk: '#ff8a3d', ikon: '🍔' },
-  { ad: 'İçecek', renk: '#3db8ff', ikon: '🥤' },
-  { ad: 'Sigara', renk: '#9b9ba6', ikon: '🚬' },
-  { ad: 'Market', renk: '#4cd964', ikon: '🛒' },
-  { ad: 'Ulaşım', renk: '#ffd60a', ikon: '🚇' },
-  { ad: 'Arkadaş', renk: '#ff4f8b', ikon: '🍻' },
-  { ad: 'Eğlence', renk: '#a259ff', ikon: '🎮' },
-  { ad: 'Kişisel', renk: '#5ee6c8', ikon: '🧴' },
-  { ad: 'Faturalar', renk: '#6c7cff', ikon: '📱' },
-  { ad: 'Sabit', renk: '#55555f', ikon: '📌' },
-  { ad: 'Diğer', renk: '#3a3a42', ikon: '•' },
-  { ad: 'Alacak', renk: '#8e8e93', ikon: '↗' },
-  { ad: 'Borç ödeme', renk: '#8e8e93', ikon: '💳' },
+  { ad: 'Yemek', renk: '#ef5350', ikon: 'food' },
+  { ad: 'İçecek', renk: '#2f80ed', ikon: 'drink' },
+  { ad: 'Sigara', renk: '#8e8e93', ikon: 'smoke' },
+  { ad: 'Market', renk: '#f2c200', ikon: 'cart' },
+  { ad: 'Ulaşım', renk: '#26c6a6', ikon: 'bus' },
+  { ad: 'Arkadaş', renk: '#7b3ff2', ikon: 'users' },
+  { ad: 'Eğlence', renk: '#ff7a45', ikon: 'ticket' },
+  { ad: 'Kişisel', renk: '#e573c7', ikon: 'user' },
+  { ad: 'Faturalar', renk: '#5b6cff', ikon: 'receipt' },
+  { ad: 'Sabit', renk: '#48484a', ikon: 'pin' },
+  { ad: 'Diğer', renk: '#3a3a3c', ikon: 'dots' },
+  { ad: 'Alacak', renk: '#636366', ikon: 'arrowUpR' },
+  { ad: 'Borç ödeme', renk: '#636366', ikon: 'card' },
 ];
 
 export const GELIR_TURLERI = [
-  { ad: 'Bar günlüğü', renk: '#4cd964', ikon: '🍸', varsayilan: 1500 },
-  { ad: 'Bahşiş', renk: '#ffd60a', ikon: '🪙' },
-  { ad: 'KYK', renk: '#3db8ff', ikon: '🎓' },
-  { ad: 'Aile', renk: '#ff4f8b', ikon: '🏠' },
-  { ad: 'Diğer', renk: '#8e8e93', ikon: '+' },
+  { ad: 'Bar günlüğü', renk: '#7b3ff2', ikon: 'glass', varsayilan: 1500 },
+  { ad: 'Bahşiş', renk: '#f2c200', ikon: 'coins' },
+  { ad: 'KYK', renk: '#2f80ed', ikon: 'cap' },
+  { ad: 'Aile', renk: '#ef5350', ikon: 'home' },
+  { ad: 'Diğer', renk: '#8e8e93', ikon: 'plus' },
 ];
 
 export const renkOf = (ad) =>
-  (KATEGORILER.find((k) => k.ad === ad) || GELIR_TURLERI.find((k) => k.ad === ad) || { renk: '#3a3a42' }).renk;
+  (KATEGORILER.find((k) => k.ad === ad) || GELIR_TURLERI.find((k) => k.ad === ad) || { renk: '#3a3a3c' }).renk;
 export const ikonOf = (ad) =>
-  (KATEGORILER.find((k) => k.ad === ad) || GELIR_TURLERI.find((k) => k.ad === ad) || { ikon: '•' }).ikon;
+  (KATEGORILER.find((k) => k.ad === ad) || GELIR_TURLERI.find((k) => k.ad === ad) || { ikon: 'dots' }).ikon;
 
 // Önce cümleler (borç), sonra kelimeler. Kelime, yazıdaki bir kelimenin başıyla eşleşir: "kolaya" → kola.
 const CUMLELER = [

@@ -59,12 +59,20 @@ export async function ekle(item) {
   return gonder();
 }
 
-export async function gonder() {
-  let data = null;
-  for (const item of getQueue()) {
-    const { qid, ...body } = item;
-    data = await call('add', body);
-    yaz(K.queue, getQueue().filter((x) => x.qid !== qid));
+// Aynı anda tek gönderim: açılıştaki yenileme ile kaydet aynı anda kuyruğu boşaltırsa kayıt çiftleniyordu
+// (2026-10-03, "Dömf · 150" tabloya iki kez düştü).
+let gonderiliyor = null;
+export function gonder() {
+  if (!gonderiliyor) {
+    gonderiliyor = (async () => {
+      let data = null;
+      while (getQueue().length) {
+        const { qid, ...body } = getQueue()[0];
+        data = await call('add', body);
+        yaz(K.queue, getQueue().filter((x) => x.qid !== qid));
+      }
+      return data;
+    })().finally(() => (gonderiliyor = null));
   }
-  return data;
+  return gonderiliyor;
 }

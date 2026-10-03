@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react';
 import { gunKey } from '../data';
 import { KATEGORILER, anahtarKelime } from '../categorize';
 import { gunBasligi, tl } from '../format';
-import { Icon, TxRow } from '../components/ui';
+import { TxRow } from '../components/ui';
+import { Ico } from '../components/icons';
 
 const FILTRELER = [
   ['tum', 'Tümü'],
@@ -56,7 +57,7 @@ export default function Transactions({ tx, filtre, setFiltre, islem }) {
         <h1>İşlemler</h1>
       </header>
       <label className="search">
-        {Icon.search}
+        <Ico n="search" size={18} />
         <input placeholder="Ara" value={ara} onChange={(e) => setAra(e.target.value)} />
       </label>
       <div className="chips scroll">
@@ -73,7 +74,7 @@ export default function Transactions({ tx, filtre, setFiltre, islem }) {
         return (
           <div className="panel" key={gun}>
             <div className="card-head">
-              <b>{gunBasligi(gun)}</b>
+              <span className="card-title">{gunBasligi(gun)}</span>
               {gider > 0 && <span className="muted">−{tl(gider)}</span>}
             </div>
             {items.map((x) => (
@@ -93,7 +94,7 @@ export default function Transactions({ tx, filtre, setFiltre, islem }) {
             </p>
             {secili.tur === 'gider' && (
               <>
-                <small className="label">“{anahtarKelime(secili.metin)}” hangi kategori?</small>
+                <small className="muted">“{anahtarKelime(secili.metin)}” hangi kategori?</small>
                 <div className="chips">
                   {ATANABILIR.map((k) => (
                     <button
@@ -101,13 +102,13 @@ export default function Transactions({ tx, filtre, setFiltre, islem }) {
                       className={`chip ${secili.kategori === k.ad ? 'on' : ''}`}
                       onClick={() => ogret(k.ad)}
                     >
-                      {k.ikon} {k.ad}
+                      <Ico n={k.ikon} size={16} /> {k.ad}
                     </button>
                   ))}
                 </div>
               </>
             )}
-            <button className="danger big" onClick={sil}>
+            <button className="btn red" onClick={sil}>
               Sil
             </button>
           </div>

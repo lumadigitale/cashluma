@@ -31,8 +31,15 @@ export function islemler(raw) {
 
 // Sabit gelir/giderler (KYK, yurt, abonelikler) her ay kendiliğinden sayılır.
 // Bu ay için: günü gelmişse gerçekleşti, gelmemişse "bekleyen".
+// Takip başlangıcı: ayarda yazıyorsa o, yoksa ilk kaydın ayı, o da yoksa bu ay.
+export function baslangicAy(raw, bugun = new Date()) {
+  if (raw.ayarlar.baslangic_ay) return String(raw.ayarlar.baslangic_ay).slice(0, 7);
+  const ilk = [...raw.giderler, ...raw.gelirler].map((x) => x.tarih).filter(Boolean).sort()[0];
+  return ilk ? ayKey(ilk) : ayKey(bugun);
+}
+
 function sabitKalemleri(raw, ay, bugun) {
-  const bas = String(raw.ayarlar.baslangic_ay || '0000-00');
+  const bas = baslangicAy(raw, bugun);
   const buAy = ayKey(bugun);
   if (ay < bas || ay > buAy) return [];
   const gun = etkinTarih(bugun).getDate();
@@ -108,7 +115,7 @@ export function borcDurumu(raw, tx) {
 // Başlangıç ayından bu yana gerçekleşen netlerin toplamı = elde kalması gereken para (yaklaşık).
 export function birikim(raw, tx, bugun = new Date()) {
   const hedef = Number(raw.ayarlar.birikim_hedefi) || 0;
-  const bas = String(raw.ayarlar.baslangic_ay || ayKey(bugun));
+  const bas = baslangicAy(raw, bugun);
   const son = ayKey(bugun);
   let toplam = 0;
   for (let ay = bas; ay <= son; ay = ayEkle(ay, 1)) toplam += ayOzeti(raw, tx, ay, bugun).net;

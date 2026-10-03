@@ -17,24 +17,6 @@ const HEADERS = {
   ayar: ['Anahtar', 'Değer'],
 };
 
-// Sigara ve İstanbulkart bilerek yok: onları düğmeyle giriyorsun, burada da olursa iki kez sayılır.
-const SABIT_TOHUM = [
-  ['Yurt', 'gider', 2000, 1, true],
-  ['Telefon', 'gider', 1500, 1, true],
-  ['Claude Pro', 'gider', 1000, 1, true],
-  ['Gemini', 'gider', 200, 1, true],
-  ['Spotify', 'gider', 55, 1, true],
-  ['KYK', 'gelir', 4000, 6, true],
-  ['Aile', 'gelir', 10000, 20, true],
-];
-
-const AYAR_TOHUM = [
-  ['baslangic_ay', '2026-10'],
-  ['borc_baslangic', 10000],
-  ['birikim_hedefi', 15000],
-  ['hedef_tarih', '2026-12-01'],
-];
-
 function kurulum() {
   const ss = SpreadsheetApp.getActive();
   Object.keys(HEADERS).forEach((k) => {
@@ -44,8 +26,6 @@ function kurulum() {
       sh.setFrozenRows(1);
     }
   });
-  tohumla_(TABS.sabit, SABIT_TOHUM);
-  tohumla_(TABS.ayar, AYAR_TOHUM);
 
   const props = PropertiesService.getScriptProperties();
   let key = props.getProperty('API_KEY');
@@ -56,10 +36,14 @@ function kurulum() {
   Logger.log('Cashluma anahtarın: ' + key);
 }
 
-function tohumla_(name, rows) {
-  const sh = SpreadsheetApp.getActive().getSheetByName(name);
-  if (sh.getLastRow() > 1) return;
-  sh.getRange(2, 1, rows.length, rows[0].length).setValues(rows);
+// Her şeyi sil, başlıklar kalsın. Bilerek elle çalıştırılır (Çalıştır → sifirla).
+function sifirla() {
+  const ss = SpreadsheetApp.getActive();
+  Object.values(TABS).forEach((name) => {
+    const sh = ss.getSheetByName(name);
+    if (sh && sh.getLastRow() > 1) sh.deleteRows(2, sh.getLastRow() - 1);
+  });
+  Logger.log('Tüm kayıtlar silindi, başlıklar duruyor.');
 }
 
 // Tüm istekler POST + text/plain: tarayıcı ön kontrol (CORS preflight) yapmaz, anahtar URL'ye düşmez.
@@ -90,6 +74,12 @@ function doPost(e) {
         break;
       case 'setting':
         upsert_(TABS.ayar, body.anahtar, body.deger);
+        break;
+      case 'sabit_ekle':
+        sabitEkle_(body);
+        break;
+      case 'sabit_sil':
+        sabitSil_(body.ad);
         break;
       default:
         return out_({ ok: false, error: 'unknown_action' });
@@ -126,6 +116,26 @@ function delete_(b) {
   const tutar = num_(sh.getRange(row, 3).getValue());
   if (tutar !== Number(b.tutar)) throw new Error('satir_degismis');
   sh.deleteRow(row);
+}
+
+function sabitEkle_(b) {
+  const ad = String(b.ad || '').trim();
+  const tutar = Number(b.tutar);
+  const gun = Math.min(28, Math.max(1, Number(b.gun) || 1));
+  if (!ad || !(tutar > 0) || (b.tur !== 'gelir' && b.tur !== 'gider')) throw new Error('sabit_gecersiz');
+  sabitSil_(ad, true);
+  SpreadsheetApp.getActive().getSheetByName(TABS.sabit).appendRow([ad, b.tur, tutar, gun, true]);
+}
+
+function sabitSil_(ad, sessiz) {
+  const sh = SpreadsheetApp.getActive().getSheetByName(TABS.sabit);
+  for (let r = sh.getLastRow(); r >= 2; r--) {
+    if (String(sh.getRange(r, 1).getValue()) === String(ad)) {
+      sh.deleteRow(r);
+      return;
+    }
+  }
+  if (!sessiz) throw new Error('sabit_yok');
 }
 
 function upsert_(name, k, v) {

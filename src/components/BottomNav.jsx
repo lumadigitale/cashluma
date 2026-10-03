@@ -1,28 +1,21 @@
-import { Icon } from './ui';
+import { Ico } from './icons';
 
 const ITEMS = [
-  ['home', 'Ana sayfa', Icon.home],
-  ['tx', 'İşlemler', Icon.list],
-  null,
-  ['analysis', 'Analiz', Icon.chart],
-  ['settings', 'Ayarlar', Icon.gear],
+  ['home', 'Ana sayfa', 'home'],
+  ['tx', 'İşlemler', 'list'],
+  ['analysis', 'Analiz', 'chart'],
+  ['settings', 'Ayarlar', 'gear'],
 ];
 
-export default function BottomNav({ tab, git, ekle }) {
+export default function BottomNav({ tab, git }) {
   return (
     <nav className="bottomnav">
-      {ITEMS.map((it) =>
-        it ? (
-          <button key={it[0]} className={tab === it[0] ? 'active' : ''} onClick={() => git(it[0])}>
-            {it[2]}
-            <span>{it[1]}</span>
-          </button>
-        ) : (
-          <button key="add" className="fab" onClick={ekle} aria-label="Ekle">
-            {Icon.plus}
-          </button>
-        ),
-      )}
+      {ITEMS.map(([k, ad, ikon]) => (
+        <button key={k} className={tab === k ? 'active' : ''} onClick={() => git(k)}>
+          <Ico n={ikon} size={22} />
+          <span>{ad}</span>
+        </button>
+      ))}
     </nav>
   );
 }

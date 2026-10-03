@@ -62,6 +62,8 @@ export function demoApi() {
       data.kurallar = data.kurallar.filter((r) => r.kelime !== p.kelime).concat({ kelime: p.kelime, kategori: p.kategori });
     }
     if (action === 'setting') data.ayarlar[p.anahtar] = p.deger;
+    if (action === 'sabit_ekle') data.sabitler = data.sabitler.filter((s) => s.ad !== p.ad).concat({ ad: p.ad, tur: p.tur, tutar: p.tutar, gun: p.gun, aktif: true });
+    if (action === 'sabit_sil') data.sabitler = data.sabitler.filter((s) => s.ad !== p.ad);
     return structuredClone({ ...data, okundu: new Date().toISOString() });
   };
 }

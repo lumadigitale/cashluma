@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { KATEGORILER, GELIR_TURLERI } from '../categorize';
 import { sayiOku, tl } from '../format';
+import { Ico } from './icons';
 
 const GIDER_SECIM = KATEGORILER.filter((k) => !['Sabit', 'Diğer', 'Alacak'].includes(k.ad));
 
@@ -67,25 +68,24 @@ export default function AddSheet({ tur: ilkTur, kapat, kaydet }) {
               type="button"
               key={k.ad}
               className={`chip ${kategori === k.ad ? 'on' : ''}`}
-              style={kategori === k.ad ? { background: k.renk, color: '#000' } : undefined}
               onClick={() => {
                 setKategori(kategori === k.ad ? '' : k.ad);
                 if (k.varsayilan && !tutar) setTutar(String(k.varsayilan));
               }}
             >
-              {k.ikon} {k.ad}
+              <Ico n={k.ikon} size={16} /> {k.ad}
             </button>
           ))}
         </div>
 
         <input
-          className="note"
+          className="input"
           placeholder={tur === 'gider' ? 'Ne aldın? (örn. döner, taksi eve)' : 'Not (isteğe bağlı)'}
           value={metin}
           onChange={(e) => setMetin(e.target.value)}
         />
 
-        <button className="primary big" disabled={!tamam}>
+        <button className="btn white" disabled={!tamam}>
           {tamam ? `${tl(n)} ${tur === 'gider' ? 'gider' : 'gelir'} kaydet` : 'Tutar gir'}
         </button>
       </form>

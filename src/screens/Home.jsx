@@ -1,130 +1,144 @@
 import { useMemo } from 'react';
-import { ayKey, ayOzeti, birikim, borcDurumu, gunKey, gunToplami } from '../data';
-import { renkOf } from '../categorize';
-import { ayAdi, tl, isaretli } from '../format';
-import { Icon, Money, Progress, SegmentBar, TxRow } from '../components/ui';
+import { ayKey, ayOzeti, birikim, borcDurumu, gunKey, gunToplami, etkinTarih } from '../data';
+import { renkOf, ikonOf } from '../categorize';
+import { ayAdi, tl } from '../format';
+import { Money, Pills, Progress, TxRow } from '../components/ui';
+import { Ico } from '../components/icons';
 
-export default function Home({ raw, tx, yukleniyor, yenile, ekle, git, tanimsiz }) {
+export default function Home({ raw, tx, yenile, ekle, git, tanimsiz }) {
   const bugun = new Date();
   const ay = ayKey(bugun);
+  const ayIsim = ayAdi(ay);
   const o = useMemo(() => ayOzeti(raw, tx, ay, bugun), [raw, tx, ay]);
   const borc = useMemo(() => borcDurumu(raw, tx), [raw, tx]);
   const bir = useMemo(() => birikim(raw, tx, bugun), [raw, tx]);
   const bugunHarcanan = gunToplami(tx, gunKey(bugun));
+  const gecenGun = etkinTarih(bugun).getDate();
+  const ortalama = o.degiskenGider / gecenGun;
+  const siradaki = o.bekleyen[0];
   const son = tx.slice(0, 5);
 
   return (
     <>
-      <header className="top">
-        <div>
-          <small>{ayAdi(ay)} {ay.slice(0, 4)}</small>
-          <h1>Merhaba Mehmet</h1>
+      <section className="wallet">
+        <div className="wallet-head">
+          <b>Cashluma</b>
+          <button onClick={() => ekle('gider')} aria-label="Kayıt ekle">
+            <Ico n="plus" size={22} />
+          </button>
         </div>
-        <button className={`iconbtn ${yukleniyor ? 'spin' : ''}`} onClick={yenile} aria-label="Yenile">
-          {Icon.refresh}
-        </button>
-      </header>
-
-      <section className="hero">
-        <div className="stack" aria-hidden>
-          <i style={{ background: '#ffd60a' }} />
-          <i style={{ background: '#3db8ff' }} />
-          <i style={{ background: '#4cd964' }} />
+        <div className="name">Mehmet</div>
+        <div className="amount-big">
+          <Money n={o.net} />
         </div>
-        <small>{ayAdi(ay)} neti</small>
-        <Money n={o.net} />
-        <div className="hero-row">
-          <span className="pill up">↑ {tl(o.gelir)}</span>
-          <span className="pill down">↓ {tl(o.gider)}</span>
+        <div className="wallet-foot">
+          <span>{ayIsim.charAt(0).toLocaleUpperCase('tr') + ayIsim.slice(1)} neti</span>
+          <span>
+            ↑ {tl(o.gelir)} &nbsp; ↓ {tl(o.gider)}
+          </span>
         </div>
-        {o.bekleyen.length > 0 && <p className="muted">Ay sonu beklenen: {tl(o.ayKapanisi)}</p>}
       </section>
 
-      <div className="actions">
-        <button className="primary" onClick={() => ekle('gider')}>
-          {Icon.minus} Gider
+      <div className="grid2">
+        <button className="card" onClick={() => git('analysis')}>
+          <span className="card-title">Harcama</span>
+          <span className="card-sub">
+            {tl(o.gider)} · {ayIsim}
+          </span>
+          <Pills items={o.kategoriler} />
         </button>
-        <button className="ghost" onClick={() => ekle('gelir')}>
-          {Icon.plus} Gelir
+        <button className="card" onClick={() => git('analysis')}>
+          <span className="card-title">Gelir</span>
+          <span className="card-sub">
+            {tl(o.gelir)} · {ayIsim}
+          </span>
+          <div className="tiles">
+            {o.gelirTurleri.length === 0 && <span style={{ background: 'var(--tile)' }} />}
+            {o.gelirTurleri.slice(0, 5).map((g) => (
+              <span key={g.ad} style={{ background: renkOf(g.ad) }} title={g.ad}>
+                <Ico n={ikonOf(g.ad)} size={16} />
+              </span>
+            ))}
+          </div>
+        </button>
+      </div>
+
+      <div className="quick">
+        <div className="quick-col">
+          <button className="sq" onClick={() => ekle('gelir')} aria-label="Gelir ekle">
+            <Ico n="plus" />
+          </button>
+          <button className="sq" onClick={yenile} aria-label="Yenile">
+            <Ico n="refresh" size={20} />
+          </button>
+        </div>
+        <button className="mid" onClick={() => git('settings')}>
+          <span className="icontile">
+            <Ico n="card" size={20} />
+          </span>
+          <div>
+            <b>Kart borcu</b>
+            {borc.baslangic ? (
+              <>
+                <div className="val">{tl(borc.kalan)}</div>
+                <Progress value={borc.odenen} max={borc.baslangic} />
+              </>
+            ) : (
+              <div className="muted">Ayarla →</div>
+            )}
+          </div>
+        </button>
+        <button className="mid" onClick={() => git('settings')}>
+          <span className="icontile">
+            <Ico n="target" size={20} />
+          </span>
+          <div>
+            <b>Birikim</b>
+            {bir.hedef ? (
+              <>
+                <div className="val">{tl(bir.toplam)}</div>
+                <Progress value={bir.toplam} max={bir.hedef} />
+              </>
+            ) : (
+              <div className="muted">Hedef koy →</div>
+            )}
+          </div>
         </button>
       </div>
 
       {tanimsiz > 0 && (
-        <button className="banner" onClick={() => git('tx', 'tanimsiz')}>
-          <b>{tanimsiz} harcamayı tanımadım</b>
-          <span>Kategorisini bir kere söyle, sonra kendim bilirim →</span>
-        </button>
-      )}
-
-      <div className="grid2">
-        <div className="card">
-          <small>Bugün</small>
-          <Money n={bugunHarcanan} size="md" />
-          <span className="muted">harcandı</span>
-        </div>
-        <button className="card" onClick={() => git('analysis')}>
-          <small>Bu ay gider</small>
-          <Money n={o.gider} size="md" />
-          <SegmentBar items={o.kategoriler} />
-        </button>
-      </div>
-
-      {o.kategoriler.length > 0 && (
-        <button className="card list" onClick={() => git('analysis')}>
-          <div className="card-head">
-            <b>Nereye gitti</b>
-            <span className="muted">{ayAdi(ay)}</span>
+        <button className="notice" onClick={() => git('tx', 'tanimsiz')}>
+          <span className="icontile">
+            <Ico n="dots" />
+          </span>
+          <div>
+            <b>{tanimsiz} kaydı tanımadım</b>
+            <span className="muted">Kategorisini bir kere söyle, sonra kendim bilirim</span>
           </div>
-          {o.kategoriler.slice(0, 4).map((k) => (
-            <div className="catrow" key={k.ad}>
-              <i style={{ background: renkOf(k.ad) }} />
-              <span>{k.ad}</span>
-              <b>{tl(k.tutar)}</b>
-            </div>
-          ))}
+          <Ico n="chevR" size={18} />
         </button>
       )}
 
-      <div className="grid2">
-        <div className="card">
-          <small>Kart borcu</small>
-          <b className="big">{tl(borc.kalan)}</b>
-          <Progress value={borc.odenen} max={borc.baslangic} renk="#ff4f8b" />
-          <span className="muted">{tl(borc.odenen)} ödendi</span>
-        </div>
-        <div className="card">
-          <small>Eve çıkış birikimi</small>
-          <b className="big">{tl(bir.toplam)}</b>
-          <Progress value={bir.toplam} max={bir.hedef} renk="#4cd964" />
-          <span className="muted">hedef {tl(bir.hedef)}</span>
-        </div>
-      </div>
-
-      {o.bekleyen.length > 0 && (
-        <div className="card list">
-          <div className="card-head">
-            <b>Bu ay gelecekler</b>
-          </div>
-          {o.bekleyen.map((s) => (
-            <div className="catrow" key={s.ad}>
-              <i style={{ background: s.tur === 'gelir' ? '#4cd964' : '#ff4f8b' }} />
-              <span>
-                {s.ad} <span className="muted">· {s.gun} {ayAdi(ay)}</span>
-              </span>
-              <b className={s.tur === 'gelir' ? 'pos' : ''}>{isaretli(s.tur === 'gelir' ? s.tutar : -s.tutar)}</b>
-            </div>
-          ))}
-        </div>
-      )}
+      <section className="wide">
+        <span className="orb" aria-hidden />
+        <span className="card-title">Bugün {tl(bugunHarcanan)} harcadın</span>
+        <span className="card-sub">
+          {ayIsim} günlük ortalaman {tl(ortalama)}.
+          {siradaki && ` Sıradaki: ${siradaki.ad} ${siradaki.gun} ${ayIsim}, ${siradaki.tur === 'gelir' ? '+' : '−'}${tl(siradaki.tutar)}.`}
+        </span>
+        <button className="btn-sm" onClick={() => git('analysis')}>
+          Analize bak
+        </button>
+      </section>
 
       <div className="panel">
         <div className="card-head">
-          <b>Son işlemler</b>
-          <button className="link" onClick={() => git('tx', 'tum')}>
+          <span className="card-title">Son işlemler</span>
+          <button className="linkbtn" onClick={() => git('tx', 'tum')}>
             Tümü
           </button>
         </div>
-        {son.length === 0 && <p className="muted empty">Henüz kayıt yok. Eylem Düğmesi ya da + ile başla.</p>}
+        {son.length === 0 && <p className="muted empty">Henüz kayıt yok. Eylem Düğmesi'yle başla.</p>}
         {son.map((x) => (
           <TxRow key={x.id} x={x} onClick={() => git('tx', 'tum')} />
         ))}

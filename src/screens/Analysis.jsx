@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { ayEkle, ayKey, ayOzeti, gunlukSeri } from '../data';
 import { renkOf } from '../categorize';
 import { ayAdi, tl, isaretli } from '../format';
-import { Icon } from '../components/ui';
+import { Ico } from '../components/icons';
 
 export default function Analysis({ raw, tx }) {
   const buAy = ayKey(new Date());
@@ -22,26 +22,26 @@ export default function Analysis({ raw, tx }) {
         <h1>Analiz</h1>
         <div className="monthpick">
           <button className="iconbtn" onClick={() => setAy(ayEkle(ay, -1))} aria-label="Önceki ay">
-            {Icon.chevL}
+            <Ico n="chevL" size={18} />
           </button>
           <span>{ayAdi(ay)}</span>
           <button className="iconbtn" disabled={ay >= buAy} onClick={() => setAy(ayEkle(ay, 1))} aria-label="Sonraki ay">
-            {Icon.chevR}
+            <Ico n="chevR" size={18} />
           </button>
         </div>
       </header>
 
       <div className="grid3">
         <div className="card">
-          <small>Gelir</small>
+          <small className="muted">Gelir</small>
           <b className="pos">{tl(o.gelir)}</b>
         </div>
         <div className="card">
-          <small>Gider</small>
+          <small className="muted">Gider</small>
           <b>{tl(o.gider)}</b>
         </div>
         <div className="card">
-          <small>Net</small>
+          <small className="muted">Net</small>
           <b className={o.net >= 0 ? 'pos' : 'neg'}>{isaretli(o.net)}</b>
         </div>
       </div>
@@ -55,7 +55,7 @@ export default function Analysis({ raw, tx }) {
 
       <div className="card">
         <div className="card-head">
-          <b>Son 6 ay</b>
+          <span className="card-title">Son 6 ay</span>
           <span className="legend">
             <i className="pos-bg" /> gelir <i className="neg-bg" /> gider
           </span>
@@ -65,7 +65,7 @@ export default function Analysis({ raw, tx }) {
 
       <div className="card list">
         <div className="card-head">
-          <b>Kategoriler</b>
+          <span className="card-title">Kategoriler</span>
           <span className="muted">{tl(o.gider)}</span>
         </div>
         {o.kategoriler.length === 0 && <p className="muted">Bu ay gider yok.</p>}
@@ -86,7 +86,7 @@ export default function Analysis({ raw, tx }) {
 
       <div className="card">
         <div className="card-head">
-          <b>Günlük harcama</b>
+          <span className="card-title">Günlük harcama</span>
           <span className="muted">sabitler hariç</span>
         </div>
         <Daily data={gunluk} />
@@ -95,7 +95,7 @@ export default function Analysis({ raw, tx }) {
       {o.gelirTurleri.length > 0 && (
         <div className="card list">
           <div className="card-head">
-            <b>Gelir kaynakları</b>
+            <span className="card-title">Gelir kaynakları</span>
           </div>
           {o.gelirTurleri.map((k) => (
             <div className="catrow" key={k.ad}>
@@ -110,7 +110,7 @@ export default function Analysis({ raw, tx }) {
       {o.haric.length > 0 && (
         <div className="card list">
           <div className="card-head">
-            <b>Harcama sayılmayanlar</b>
+            <span className="card-title">Harcama sayılmayanlar</span>
           </div>
           {o.haric.map((x) => (
             <div className="catrow" key={x.id}>

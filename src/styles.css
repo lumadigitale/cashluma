@@ -25,7 +25,8 @@ input, select { font: inherit; color: inherit; }
 svg { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
 /* Kabuk: içerik kendi içinde kayar, menü her zaman altta (iOS'ta fixed menü kaymasın diye) */
-.app { height: 100%; max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; }
+/* --app-h main.jsx'te ayarlanır: ana ekran modunda telefonun gerçek ekran boyu (iOS orada 100%'ü kısa veriyor) */
+.app { position: fixed; top: 0; left: 0; right: 0; height: var(--app-h, 100dvh); max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; }
 .screen {
   flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
   padding: calc(env(safe-area-inset-top) + 14px) 16px 24px;
@@ -163,7 +164,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round
 /* Alt menü: akışta, sabit değil */
 .bottomnav {
   flex: none; display: grid; grid-template-columns: repeat(4, 1fr);
-  padding: 8px 8px calc(env(safe-area-inset-bottom) + 6px); background: #000; border-top: 1px solid var(--line);
+  padding: 6px 8px max(env(safe-area-inset-bottom), 8px); background: #000; border-top: 1px solid var(--line);
 }
 .bottomnav button { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--dim); font-size: 11px; padding: 4px 0; }
 .bottomnav button.active { color: #fff; }

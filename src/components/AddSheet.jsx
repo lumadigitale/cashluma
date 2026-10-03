@@ -7,7 +7,8 @@ const GIDER_SECIM = KATEGORILER.filter((k) => !['Sabit', 'Diğer', 'Alacak'].inc
 
 export default function AddSheet({ tur: ilkTur, kapat, kaydet }) {
   const [tur, setTur] = useState(ilkTur);
-  const [tutar, setTutar] = useState('');
+  // Gelir açılınca Bar günlüğü seçili ve 1.500 dolu gelir (en sık kayıt)
+  const [tutar, setTutar] = useState(ilkTur === 'gelir' ? '1500' : '');
   const [kategori, setKategori] = useState(ilkTur === 'gelir' ? 'Bar günlüğü' : '');
   const [metin, setMetin] = useState('');
   const ref = useRef(null);
@@ -19,6 +20,7 @@ export default function AddSheet({ tur: ilkTur, kapat, kaydet }) {
   const turDegis = (t) => {
     setTur(t);
     setKategori(t === 'gelir' ? 'Bar günlüğü' : '');
+    setTutar(t === 'gelir' ? '1500' : '');
   };
 
   const n = sayiOku(tutar);

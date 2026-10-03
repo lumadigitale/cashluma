@@ -21,6 +21,16 @@ registerSW({
   },
 });
 
+// Ana ekrandan açılınca (standalone) uygulama tüm ekranı kaplar; iOS ise sayfaya bazen daha kısa
+// bir yükseklik bildiriyor ve alt menü havada kalıyordu. O modda yüksekliği ekranın kendisinden al.
+function yukseklikAyarla() {
+  const standalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+  const h = standalone ? Math.max(window.screen.height, window.innerHeight) : window.innerHeight;
+  document.documentElement.style.setProperty('--app-h', `${h}px`);
+}
+yukseklikAyarla();
+window.addEventListener('resize', yukseklikAyarla);
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />

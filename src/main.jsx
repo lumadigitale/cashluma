@@ -21,12 +21,25 @@ registerSW({
   },
 });
 
-// Ana ekrandan açılınca (standalone) uygulama tüm ekranı kaplar; iOS ise sayfaya bazen daha kısa
-// bir yükseklik bildiriyor ve alt menü havada kalıyordu. O modda yüksekliği ekranın kendisinden al.
+// iPhone ana ekran modu (ölçüldü, 2026-10-03, ekran 956): sayfaya 894 veriyor, aradaki 62 (saat çubuğu
+// kadar) ekranın altında görünmeyen bölge kalıyor ve oraya çizilen kesiliyor. Çentik boşluğu (34) o
+// gizli bölgenin içinde. Bu yüzden: yükseklik = sayfanın bildirdiği yükseklik; menünün alt boşluğu =
+// çentik boşluğunun gizli bölgeye sığmayan kısmı (hatasız cihazda tam çentik boşluğu).
+function guvenliAlan() {
+  const p = document.createElement('div');
+  p.style.cssText = 'position:fixed;visibility:hidden;padding-bottom:env(safe-area-inset-bottom)';
+  document.body.appendChild(p);
+  const alt = parseFloat(getComputedStyle(p).paddingBottom) || 0;
+  p.remove();
+  return alt;
+}
 function yukseklikAyarla() {
   const standalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-  const h = standalone ? Math.max(window.screen.height, window.innerHeight) : window.innerHeight;
+  const h = window.innerHeight;
+  const gizli = standalone ? Math.max(0, window.screen.height - h) : 0;
+  const altBosluk = Math.max(6, guvenliAlan() - gizli);
   document.documentElement.style.setProperty('--app-h', `${h}px`);
+  document.documentElement.style.setProperty('--nav-alt', `${altBosluk}px`);
 }
 yukseklikAyarla();
 window.addEventListener('resize', yukseklikAyarla);

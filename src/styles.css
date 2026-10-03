@@ -27,6 +27,8 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round
 /* Kabuk: içerik kendi içinde kayar, menü her zaman altta (iOS'ta fixed menü kaymasın diye) */
 /* --app-h ve --nav-alt main.jsx'te ölçülerek ayarlanır (iOS ana ekran modu hatası) */
 .app { position: fixed; top: 0; left: 0; right: 0; height: var(--app-h, 100dvh); max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; }
+/* Saat/pil çubuğunun arkası: kayan içerik saatin altından görünmesin */
+.app::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: env(safe-area-inset-top); background: #000; z-index: 5; pointer-events: none; }
 .screen {
   flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
   padding: calc(env(safe-area-inset-top) + 14px) 16px 24px;

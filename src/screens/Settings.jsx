@@ -80,8 +80,6 @@ export default function Settings({ raw, yenile, islem }) {
       <p className="muted center">
         Sürüm {__SURUM__}
         <br />
-        <Olcum />
-        <br />
         {raw.okundu ? `Son okuma ${new Date(raw.okundu).toLocaleString('tr-TR')}` : 'Henüz okunmadı'}
       </p>
     </>
@@ -173,27 +171,4 @@ function SabitListesi({ baslik, ornek, tur, liste, islem }) {
       )}
     </div>
   );
-}
-
-// GEÇİCİ: iPhone ana ekran modunda alt menü yerleşimini teşhis için ölçüler (2026-10-03)
-function Olcum() {
-  const [m, setM] = useState('');
-  useState(() => {
-    setTimeout(() => {
-      const p = document.createElement('div');
-      p.style.cssText = 'position:fixed;top:0;left:0;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);visibility:hidden';
-      document.body.appendChild(p);
-      const cs = getComputedStyle(p);
-      const app = document.querySelector('.app')?.getBoundingClientRect();
-      const nav = document.querySelector('.bottomnav')?.getBoundingClientRect();
-      const st = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-      setM(
-        `ölçüm st=${st ? 1 : 0} iH=${innerHeight} sH=${screen.height} vv=${Math.round(window.visualViewport?.height || 0)} ` +
-          `cH=${document.documentElement.clientHeight} app=${Math.round(app?.height || 0)} nav=${Math.round(nav?.top || 0)}-${Math.round(nav?.bottom || 0)} ` +
-          `üst=${parseFloat(cs.paddingTop)} alt=${parseFloat(cs.paddingBottom)}`,
-      );
-      p.remove();
-    }, 300);
-  });
-  return <span>{m}</span>;
 }

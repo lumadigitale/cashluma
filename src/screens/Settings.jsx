@@ -78,6 +78,8 @@ export default function Settings({ raw, yenile, islem }) {
       {bagli && baglanti}
 
       <p className="muted center">
+        Sürüm {__SURUM__}
+        <br />
         {raw.okundu ? `Son okuma ${new Date(raw.okundu).toLocaleString('tr-TR')}` : 'Henüz okunmadı'}
       </p>
     </>
